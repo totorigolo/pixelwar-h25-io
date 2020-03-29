@@ -77,7 +77,7 @@ fn paint_insalgo() {
             let rgb = pixel.to_rgb();
             let color = Color(rgb.0[0], rgb.0[1], rgb.0[2]);
 
-            pixels.push((x + 5, y + 20, color));
+            pixels.push((x + 2, 99 - (30 + 10) + y, color));
         }
     }
     let mut rng = rand::thread_rng();
