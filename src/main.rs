@@ -1,7 +1,8 @@
+use core::fmt;
+use image::{GenericImageView, Pixel};
+use rand::prelude::*;
 use rayon::prelude::*;
 use sha2::{Digest, Sha256};
-use core::fmt;
-use rand::prelude::*;
 
 struct Color(u8, u8, u8);
 
@@ -33,7 +34,7 @@ fn get_proof() -> String {
     }
 }
 
-fn paint(pixels: &[(u64, u64, Color)]) {
+fn paint(pixels: &[(u32, u32, Color)]) {
     pixels.into_par_iter().for_each(|(x, y, color)| {
         let proof = get_proof();
 
@@ -50,23 +51,43 @@ fn paint(pixels: &[(u64, u64, Color)]) {
     });
 }
 
+#[allow(dead_code)]
 fn paint_pink() {
-    let mut coords = Vec::with_capacity(100*100);
+    let mut pixels = Vec::with_capacity(100 * 100);
     for x in 0..99 {
         for y in 0..99 {
             if x + y % 2 == 0 || x % 2 == 0 {
                 let color = Color(61, 66, 170);
-                coords.push((99-x, 99-y, color));
+                pixels.push((99 - x, 99 - y, color));
             }
         }
     }
     let mut rng = rand::thread_rng();
-    coords.shuffle(&mut rng);
-    paint(&coords);
+    pixels.shuffle(&mut rng);
+    paint(&pixels);
+}
+
+fn paint_insalgo() {
+    let mut pixels = Vec::with_capacity(100 * 100);
+    let img = image::open("insalgo-30.png").unwrap();
+    let (width, height) = img.dimensions();
+    for x in 0..width {
+        for y in 0..height {
+            let pixel = img.get_pixel(x, y);
+            let rgb = pixel.to_rgb();
+            let color = Color(rgb.0[0], rgb.0[1], rgb.0[2]);
+
+            pixels.push((x + 5, y + 20, color));
+        }
+    }
+    let mut rng = rand::thread_rng();
+    pixels.shuffle(&mut rng);
+    paint(&pixels);
 }
 
 fn main() {
     loop {
-        paint_pink();
+        // paint_pink();
+        paint_insalgo();
     }
 }
